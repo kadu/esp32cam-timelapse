@@ -18,11 +18,11 @@
 #include <WebServer.h>
 #include "ServoEasing.h"
 
-// #define SERVO1_PIN 12
-// #define SERVO2_PIN 15
+#define SERVO1_PIN 12
+#define SERVO2_PIN 15
 
-// ServoEasing Servo1;
-// ServoEasing Servo2;
+ServoEasing Servo1;
+ServoEasing Servo2;
 
 // Wifi
 const char* ssid     = "kaduzius";
@@ -67,20 +67,20 @@ WiFiClient client;
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-// void startServos() {
-//   if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
-//     Serial.println(F("Error attaching servo"));
-//   }
-//   if (Servo2.attach(SERVO2_PIN) == INVALID_SERVO) {
-//     Serial.println(F("Error attaching servo"));
-//   }
+void startServos() {
+  if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
+    Serial.println(F("Error attaching servo"));
+  }
+  if (Servo2.attach(SERVO2_PIN) == INVALID_SERVO) {
+    Serial.println(F("Error attaching servo"));
+  }
 
-//   Servo1.write(0);
-//   Servo2.write(0);
+  Servo1.write(0);
+  Servo2.write(0);
 
-//   // Wait for servo to reach start position.
-//   delay(1500);
-// }
+  // Wait for servo to reach start position.
+  delay(1500);
+}
 
 String sendPhoto() {
   String getAll;
@@ -175,7 +175,7 @@ void setup() {
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);
 
-//  startServos();
+ startServos();
 
   WiFi.mode(WIFI_STA);
   Serial.println();
@@ -251,8 +251,6 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  // Servo1.update();
-  // Servo2.update();
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= timerInterval) {
     sendPhoto();
