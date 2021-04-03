@@ -5,7 +5,7 @@ This project will control a Pan & Tilt and a ESP32 Cam
 ### TODO List
 
 - [x] ESP32 Cam - Image Upload
-- [ ] ESP32 Servo control without interfere in image upload
+- [x] ESP32 Servo control without interfere in image upload
 - [ ] Configuration Persist in ESP32 Cam Memory
 - [ ] Fallback when not reach Upload Server
 - [ ] Interval picture configuration

@@ -18,8 +18,8 @@
 #include <WebServer.h>
 #include "ServoEasing.h"
 
-#define SERVO1_PIN 12
-#define SERVO2_PIN 15
+#define SERVO1_PIN 13
+#define SERVO2_PIN 16
 
 ServoEasing Servo1;
 ServoEasing Servo2;
@@ -68,6 +68,7 @@ WiFiClient client;
 #define PCLK_GPIO_NUM     22
 
 void startServos() {
+  Serial.print("Starting servo motors ");
   if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
     Serial.println(F("Error attaching servo"));
   }
@@ -75,11 +76,15 @@ void startServos() {
     Serial.println(F("Error attaching servo"));
   }
 
+
   Servo1.write(0);
   Servo2.write(0);
 
   // Wait for servo to reach start position.
   delay(1500);
+  Serial.println("DONE.");
+  Servo1.easeTo(90, 20);
+  Servo2.easeTo(90, 20);
 }
 
 String sendPhoto() {
@@ -173,10 +178,11 @@ void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
   pinMode(4, OUTPUT);
+
+
+  startServos();
+
   digitalWrite(4, HIGH);
-
- startServos();
-
   WiFi.mode(WIFI_STA);
   Serial.println();
   Serial.print(F("Connecting to "));
