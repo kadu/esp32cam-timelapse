@@ -10,6 +10,7 @@
 */
 
 #include <Arduino.h>
+#include <Preferences.h>
 #include <WiFi.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
@@ -17,12 +18,14 @@
 #include <NTPClient.h>
 #include <WebServer.h>
 #include "ServoEasing.h"
+#include "html.h"
 
 #define SERVO1_PIN 13
 #define SERVO2_PIN 16
 
 ServoEasing Servo1;
 ServoEasing Servo2;
+Preferences preferences;
 
 // Wifi
 const char* ssid     = "kaduzius";
@@ -34,18 +37,17 @@ NTPClient ntp(udp, "a.st1.ntp.br", -3 * 3600, 60000);
 String hora;
 
 // Upload server
-String serverName    = "192.168.11.160";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
-String serverPath    = "/upload";     // The default serverPath should be upload.php
-const int serverPort = 3001;          // Server port
+String serverName;     //= preferences.getString("host","192.168.11.160");   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
+String serverPath;     //= "/upload";     // The default serverPath should be upload.php
+int serverPort;        //= 3001;          // Server port
 
 // Webserver
 WebServer server(80);
 
 // photo config / timelapse
-const int timeIntervalInMinutes = 1;
-const int timerInterval         = timeIntervalInMinutes*60000; // time between each HTTP POST image
-unsigned long previousMillis    = 0;                           // last time image was sent
-framesize_t picSize             = FRAMESIZE_HD;              // Image size
+int timerInterval             = 0; // time between each HTTP POST image
+unsigned long previousMillis  = 0;                           // last time image was sent
+framesize_t picSize           = FRAMESIZE_HD;              // Image size
 
 WiFiClient client;
 
@@ -163,21 +165,56 @@ String sendPhoto() {
   return getBody;
 }
 
-// Handle root url (/)
 void handle_root() {
-  String response;
-  response = "<form accept-charset=\"UTF-8\" action=\"action_page.php\" autocomplete=\"off\" method=\"GET\" target=\"_blank\">";
-  response += "<input name=\"name\" type=\"text\" value=\"Frank\" /> <br />";
-  response += "<input name=\"democheckbox\" type=\"checkbox\" value=\"1\" /> Checkbox<br />";
-  response += "<button type=\"submit\" value=\"Submit\">Submit</button>";
-  response += "</form>";
-  server.send(200, "text/html", response);
+  server.send(200, "text/html", getHTML());
+}
+
+void handle_pantilt() {
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+
+  server.send(200, "text/plain", message);
+}
+
+void handle_config() {
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+
+  server.send(200, "text/plain", message);
 }
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
   pinMode(4, OUTPUT);
+
+  preferences.begin("timelapse",false);
+
+  serverName = preferences.getString("host","192.168.11.160");
+  serverPath = preferences.getString("path","/upload");
+  serverPort = preferences.getInt("port",3001);
+  int intervalMins = preferences.getInt("interval",1);
+  timerInterval = intervalMins * 60000;
 
 
   startServos();
@@ -201,6 +238,8 @@ void setup() {
   ntp.forceUpdate();
 
   server.on("/", handle_root);
+  server.on("/pan_tilt", handle_pantilt);
+  server.on("/config", handle_config);
 
   server.begin();
   Serial.println(F("HTTP server started"));

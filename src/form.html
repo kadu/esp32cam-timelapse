@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ESP32 Cam Pan & Tilt</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.5/pure-min.css" crossorigin="anonymous">
+    <style>
+    </style>
+  </head>
+  <body>
+    <h1>ESP32Cam Pan & Tilt Configurations</h1>
+    <form class="pure-form pure-form-aligned">
+      <fieldset>
+          <legend>Pan & Tilt</legend>
+          <div class="pure-control-group">
+            <label for="pan">Pan</label>
+            <input type="text" placeholder="90" id="pan" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-control-group">
+            <label for="pan">Tilt</label>
+            <input type="text" placeholder="90" id="tilt" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-controls">
+            <button type="button" class="pure-button pure-button-primary" id="change" onclick="teste()">Change</button>
+          </div>
+      </fieldset>
+    </form>
+
+    <form class="pure-form pure-form-aligned">
+      <fieldset>
+          <legend>Configuration</legend>
+          <div class="pure-control-group">
+            <label for="host">Server Host</label>
+            <input type="text" placeholder="192.168.11.160" id="host" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-control-group">
+            <label for="path">Server Path</label>
+            <input type="text" placeholder="/upload" id="path" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-control-group">
+            <label for="port">Server Port</label>
+            <input type="text" placeholder="3001" id="port" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-control-group">
+            <label for="interval">Picture interval (minutes)</label>
+            <input type="text" placeholder="1" id="interval" class="pure-input-rounded"/>
+          </div>
+          <div class="pure-controls">
+            <button type="submit" class="pure-button pure-button-primary">Save</button>
+          </div>
+      </fieldset>
+    </form>
+
+    <script>
+      function teste() {
+        document.getElementById("pan").value
+        document.getElementById("tilt")
+        alert("Test");
+      }
+    </script>
+  </body>
+</html>
