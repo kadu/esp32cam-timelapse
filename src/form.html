@@ -54,10 +54,22 @@
 
     <script>
       function teste() {
-        document.getElementById("pan").value
-        document.getElementById("tilt")
-        alert("Test");
+
+        let data = {
+          pan: document.getElementById("pan").value,
+          tilt: document.getElementById("tilt").value
+        };
+        fetch("http://192.168.11.52/pan_tilt", {
+          method: "POST",
+          body: JSON.stringify(data)
+        }).then(res => {
+          console.log("Request complete! response:", res);
+        });
+
+        console.log("Fim?");
       }
+
+
     </script>
   </body>
 </html>

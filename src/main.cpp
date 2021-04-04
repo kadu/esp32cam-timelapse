@@ -17,6 +17,7 @@
 #include "esp_camera.h"
 #include <NTPClient.h>
 #include <WebServer.h>
+#include <ArduinoJson.h>
 #include "ServoEasing.h"
 #include "html.h"
 
@@ -179,10 +180,18 @@ void handle_pantilt() {
   message += server.args();
   message += "\n";
 
+  String json;
   for (uint8_t i = 0; i < server.args(); i++) {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+    json = server.arg(i);
   }
 
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, json);
+
+  Serial.println(doc["chave"]);
+
+  server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "text/plain", message);
 }
 
@@ -200,6 +209,7 @@ void handle_config() {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
 
+  server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "text/plain", message);
 }
 
@@ -291,14 +301,14 @@ void setup() {
     ESP.restart();
   }
 
-  sendPhoto();
+  //sendPhoto();
 }
 
 void loop() {
   server.handleClient();
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= timerInterval) {
-    sendPhoto();
+    //sendPhoto();
     previousMillis = currentMillis;
     hora = ntp.getFormattedTime();
     ntp.getDay();
